@@ -23,39 +23,63 @@ const transportOptions = {
     yacht: "maritime",
   },
 };
-/** 1 */
-const transportOptionsFormatted = {};
+
+const transportOptionsFormatted = Object.entries(transportOptions.data).reduce(
+  ({ data, keys, transportType }, [key, value]) => {
+    const type = transportOptions.transportType[key]?.toUpperCase();
+    return {
+      data: { ...data, [key]: { ...value, type } },
+      keys: [...keys, key],
+      transportType: new Set([...transportType, type]),
+    };
+  },
+  { data: {}, keys: [], transportType: new Set() }
+);
+
+const title = Array.from(transportOptionsFormatted.transportType).join(" - ");
 
 function App() {
   const [selectedOption, setSelectedOption] = useState(null);
 
   const handleChange = (event) => {
-    /** 3 */
+    setSelectedOption({
+      optionsSelectedKey: event.target.value,
+      optionsSelectedData: transportOptionsFormatted.data[event.target.value],
+    });
   };
 
   return (
     <div className="App">
       <p>
-        Tipos de medio de transporte:
-        {/* 2- <span></span> */}
+        Tipos de medio de transporte: <span>{title}</span>
       </p>
       <div className="select-container">
         <label>Selecciona un medio de transporte</label>
-        <select value={selectedOption} onChange={handleChange}>
-          <option value="opcion1">Opción 1</option>
-          <option value="opcion2">Opción 2</option>
-          {/* 3- ....*/}
-        </select>
-
-        <button
-        // 5- onClick={() => {}}
+        <select
+          value={selectedOption?.optionsSelectedKey}
+          onChange={handleChange}
         >
-          Limpiar
-        </button>
+          {transportOptionsFormatted.keys.map((option, index) => (
+            <option key={index} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+        <button onClick={() => setSelectedOption(null)}>Limpiar</button>
       </div>
-      {/* 4- {selectedOption && <ul>
-        <li>Opcion1: Valor1</li>
-      </ul>} */}
+      {selectedOption && (
+        <ul>
+          {Object.entries(selectedOption?.optionsSelectedData).map(
+            ([key, value]) => (
+              <li key={key}>
+                <p>
+                  {key}: {value}
+                </p>
+              </li>
+            )
+          )}
+        </ul>
+      )}
     </div>
   );
 }
