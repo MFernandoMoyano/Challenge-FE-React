@@ -23,39 +23,61 @@ const transportOptions = {
     yacht: "maritime",
   },
 };
+
 /** 1 */
 const transportOptionsFormatted = {};
 
 function App() {
   const [selectedOption, setSelectedOption] = useState(null);
 
+  const keys = Object.keys(transportOptions.transportType);
+
+  keys.forEach((key) => {
+    transportOptionsFormatted[key] = {
+      ...transportOptions.data[key],
+      type: transportOptions.transportType[key]
+    }
+  })
+
+  const types = [];
+  keys.forEach(key =>{
+    const type = transportOptions.transportType[key];
+    if(!types.includes(type)) {
+      types.push(type);
+    }
+  })
+
   const handleChange = (event) => {
-    /** 3 */
+    setSelectedOption(event.target.value)
   };
 
   return (
     <div className="App">
       <p>
         Tipos de medio de transporte:
-        {/* 2- <span></span> */}
+        {types.map((type, i) => <> { !!i && ' - ' } {type}</>)}
       </p>
       <div className="select-container">
         <label>Selecciona un medio de transporte</label>
         <select value={selectedOption} onChange={handleChange}>
-          <option value="opcion1">Opción 1</option>
-          <option value="opcion2">Opción 2</option>
-          {/* 3- ....*/}
+          { keys.map((key) => 
+            <option
+              key={key} 
+              value={transportOptionsFormatted[key]}>
+              {transportOptionsFormatted[key].description}
+            </option>
+          )}
         </select>
 
         <button
-        // 5- onClick={() => {}}
+          onClick={() => {setSelectedOption(null)}}
         >
           Limpiar
         </button>
       </div>
-      {/* 4- {selectedOption && <ul>
+      {selectedOption && <ul>
         <li>Opcion1: Valor1</li>
-      </ul>} */}
+      </ul>}
     </div>
   );
 }
